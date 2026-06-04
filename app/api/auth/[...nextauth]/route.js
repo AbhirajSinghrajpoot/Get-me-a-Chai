@@ -10,6 +10,9 @@ import User from '@/models/User';
 import Payment from '@/models/Payment';
  
 
+// Ensure DB connected before NextAuth handlers run
+await connectDb()
+
 export const authoptions =  NextAuth({
     providers: [
       // OAuth authentication providers...

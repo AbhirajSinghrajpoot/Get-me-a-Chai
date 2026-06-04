@@ -70,7 +70,7 @@ const PaymentPage = ({ username }) => {
             "description": "Test Transaction",
             "image": "https://example.com/your_logo",
             "order_id": orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-            "callback_url": `${process.env.NEXT_PUBLIC_URL || (typeof window !== 'undefined' ? window.location.origin : '')}/api/razorpay`,
+            "callback_url": `/api/razorpay`,
             "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
                 "name": "Gaurav Kumar", //your customer's name
                 "email": "gaurav.kumar@example.com",
@@ -108,10 +108,18 @@ const PaymentPage = ({ username }) => {
 
 
             <div className='cover w-full bg-red-50 relative'>
-                <img className='object-cover w-full h-48 md:h-[350px] shadow-blue-700 shadow-sm' src={currentUser.coverpic} alt="" />
-                <div className='absolute -bottom-20 right-[33%] md:right-[46%] border-white overflow-hidden border-2 rounded-full size-36'>
-                    <img className='rounded-full object-cover size-36' width={128} height={128} src={currentUser.profilepic} alt="" />
-                </div>
+                        {currentUser.coverpic ? (
+                            <img className='object-cover w-full h-48 md:h-[350px] shadow-blue-700 shadow-sm' src={currentUser.coverpic} alt="cover" />
+                        ) : (
+                            <div className='object-cover w-full h-48 md:h-[350px] bg-slate-700' />
+                        )}
+                                <div className='absolute -bottom-20 right-[33%] md:right-[46%] border-white overflow-hidden border-2 rounded-full size-36'>
+                                        {currentUser.profilepic ? (
+                                            <img className='rounded-full object-cover size-36' width={128} height={128} src={currentUser.profilepic} alt="profile" />
+                                        ) : (
+                                            <div className='rounded-full bg-slate-600 w-32 h-32' />
+                                        )}
+                                </div>
             </div>
             <div className="info flex justify-center items-center my-24 mb-32 flex-col gap-2">
                 <div className='font-bold text-lg'>

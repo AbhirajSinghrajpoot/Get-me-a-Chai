@@ -16,8 +16,9 @@ export const initiate = async (amount, to_username, paymentform) => {
     let x = await instance.orders.create(options)
 
     // create a payment object which shows a pending payment in the database
-
-    await Payment.create({ oid: x.id, to_user: to_username, amount: amount, name: paymentform.name, message: paymentform.message, done: false })
+    const safeName = paymentform && paymentform.name ? paymentform.name : "Anonymous"
+    const safeMessage = paymentform && paymentform.message ? paymentform.message : ""
+    await Payment.create({ oid: x.id, to_user: to_username, amount: Number.parseInt(amount), name: safeName, message: safeMessage, done: false })
     return x
 }
 

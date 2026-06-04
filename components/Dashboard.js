@@ -33,8 +33,9 @@ const Dashboard = () => {
     }
 
     const handleSubmit = async (e) => {
-
-        let a = await updateProfile(e, session.user.name)
+        e.preventDefault()
+        const formData = new FormData(e.target)
+        let a = await updateProfile(formData, session.user.name)
         toast('Profile Updated', {
             position: "top-right",
             autoClose: 5000,
@@ -71,7 +72,7 @@ const Dashboard = () => {
             <div className='container mx-auto py-5 px-6 '>
                 <h1 className='text-center my-5 text-3xl font-bold'>Welcome to your Dashboard</h1>
 
-                <form className="max-w-2xl mx-auto" action={handleSubmit}>
+                <form className="max-w-2xl mx-auto" onSubmit={handleSubmit}>
 
                     <div className='my-2'>
                         <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
