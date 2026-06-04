@@ -25,13 +25,28 @@ export const fetchuser = async (username) => {
     await connectDb()
     // Support both `Username` (schema) and `username` (sessions/UI) keys
     const user = await User.findOne({ $or: [{ Username: username }, { username: username }] }).lean()
-    return user || {}
+    if (!user) return {}
+    // Convert non-serializable fields to plain values for sending to client
+    const safe = { ...user }
+    if (safe._id) safe._id = String(safe._id)
+    if (safe.createdAt instanceof Date) safe.createdAt = safe.createdAt.toISOString()
+    if (safe.updatedAt instanceof Date) safe.updatedAt = safe.updatedAt.toISOString()
+    return safe
 }
 
 export const fetchpayments = async (username) => {
     await connectDb()
     const payments = await Payment.find({ to_user: username, done: true }).sort({ createdAt: -1 }).limit(10).lean()
-    return payments || []
+    if (!payments) return []
+    // Ensure each payment is serializable
+    const safePayments = payments.map(p => {
+        const s = { ...p }
+        if (s._id) s._id = String(s._id)
+        if (s.createdAt instanceof Date) s.createdAt = s.createdAt.toISOString()
+        if (s.updatedAt instanceof Date) s.updatedAt = s.updatedAt.toISOString()
+        return s
+    })
+    return safePayments
 }
 
 export const updateProfile = async (formData, username) => {
