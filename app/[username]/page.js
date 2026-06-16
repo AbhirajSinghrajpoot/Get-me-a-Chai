@@ -1,20 +1,12 @@
 "use client"
-import React, { useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter, useParams } from 'next/navigation'
+import React from 'react'
+import { useParams } from 'next/navigation'
 import PaymentPage from '@/components/PaymentPage'
 
+// Auth redirect is handled inside PaymentPage itself — no need to duplicate it here
 const Username = () => {
-  const { status } = useSession()
-  const router = useRouter()
   const params = useParams()
-  const username = params?.username
-
-  useEffect(() => {
-    if (status === 'unauthenticated' && username) {
-      router.push(`/login?callbackUrl=/${username}`)
-    }
-  }, [status, router, username])
+  const username = params?.username ? decodeURIComponent(params.username) : undefined
 
   return <PaymentPage username={username} />
 }
