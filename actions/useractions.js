@@ -8,14 +8,12 @@ import User from "@/models/User"
 
 export const initiate = async (amount, to_username, paymentform) => {
     await connectDb()
-    // Decode any URL-encoded characters (e.g. %20 → space) then normalise to lowercase
     const normalizedUsername = decodeURIComponent(to_username).toLowerCase()
     const toUser = await User.findOne({ username: normalizedUsername }).lean()
     if (!toUser) {
         throw new Error(`Creator "${to_username}" not found in database`)
     }
 
-    // Use creator's own Razorpay keys so money goes to them; fall back to platform keys
     const keyId     = toUser.razorpayid     || process.env.KEY_ID
     const keySecret = toUser.razorpaysecret || process.env.KEY_SECRET
 
@@ -29,11 +27,10 @@ export const initiate = async (amount, to_username, paymentform) => {
     const safeName    = paymentform && paymentform.name    ? paymentform.name    : "Anonymous"
     const safeMessage = paymentform && paymentform.message ? paymentform.message : ""
 
-    // Normalize to_user to lowercase so queries stay consistent
     await Payment.create({
         oid:     x.id,
         to_user: normalizedUsername,
-        amount:  Number.parseInt(amount),
+        amount:  Math.round(Number.parseInt(amount) / 100),
         name:    safeName,
         message: safeMessage,
         done:    false
@@ -77,7 +74,6 @@ export const fetchpayments = async (username) => {
 export const updateProfile = async (formData, username) => {
     await connectDb()
     const data = Object.fromEntries(formData)
-    // Do not allow the user to change their username key here (it's the lookup key)
     const { username: _ignore, ...rest } = data
     const update = { ...rest, updatedAt: new Date() }
     await User.updateOne(

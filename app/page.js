@@ -1,4 +1,19 @@
+"use client"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+
 export default function Home() {
+  const { data: session } = useSession()
+  const router = useRouter()
+
+  const handleStartNow = () => {
+    if (session?.user?.username) {
+      router.push(`/${session.user.username}`)
+    } else {
+      router.push("/login")
+    }
+  }
+
   return (
     <>
       <div className="flex justify-center flex-col items-center text-white h-[44vh]">
@@ -7,8 +22,25 @@ export default function Home() {
           A crowdfunding platform for Creators. Get funded by your fans and followers. Start now!
         </p>
         <div>
-          <button type="button" className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Start Now</button>
-          <button type="button" className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Read More</button>
+          <button
+            onClick={handleStartNow}
+            type="button"
+            className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+          >
+            Start Now
+          </button>
+          <a
+            href="https://wizards-portfolio.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <button
+              type="button"
+              className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+            >
+              Read More
+            </button>
+          </a>
         </div>
       </div>
       <div className='bg-amber-50 h-1 opacity-10'>
@@ -42,3 +74,4 @@ export default function Home() {
     </>
   );
 }
+

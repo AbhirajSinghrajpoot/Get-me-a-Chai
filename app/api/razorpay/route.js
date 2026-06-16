@@ -39,7 +39,7 @@ export const POST = async (req) => {
           { new: true }
         )
         if (updatedPayment) {
-            return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL}/${updatedPayment.to_user}?paymentdone=true`)
+            return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL}/${updatedPayment.to_user}?paymentdone=true`, { status: 302 })
         }
         return NextResponse.json({ success: false, message: 'Payment verified but record not found' })
     }

@@ -17,7 +17,6 @@ const PaymentPage = ({ username }) => {
     const [payments, setPayments] = useState([])
     const searchParams = useSearchParams()
     const router = useRouter()
-    // Guard: make sure toast fires only ONCE per page load, not on every re-render
     const toastShown = useRef(false)
 
     const getData = useCallback(async () => {
@@ -39,7 +38,7 @@ const PaymentPage = ({ username }) => {
 
     useEffect(() => {
         if (searchParams.get("paymentdone") === "true" && !toastShown.current) {
-            toastShown.current = true   // prevent repeat on re-renders
+            toastShown.current = true
             toast('🎉 Thanks for your donation!', {
                 position: "top-right",
                 autoClose: 5000,
@@ -52,7 +51,6 @@ const PaymentPage = ({ username }) => {
                 transition: Bounce,
             });
             getData()
-            // Clean the ?paymentdone=true from the URL so refreshing doesn't re-toast
             router.replace(`/${username}`, { scroll: false })
         }
     }, [searchParams, getData, router, username])
@@ -86,8 +84,7 @@ const PaymentPage = ({ username }) => {
         rzp1.open();
     }
 
-    // Total raised in rupees (amounts stored in paise → divide by 100)
-    const totalRaised = payments.reduce((a, b) => a + b.amount, 0) / 100
+    const totalRaised = payments.reduce((a, b) => a + b.amount, 0)
 
     return (
         <>
@@ -121,7 +118,6 @@ const PaymentPage = ({ username }) => {
             <div className="info flex justify-center items-center my-24 mb-11 flex-col gap-2">
                 <div className='font-bold text-lg'>@{username}</div>
                 <div className='text-slate-400'>Lets help {username} get a chai!</div>
-                {/* ✅ FIX: divide total by 100 — amounts stored in paise */}
                 <div className='text-slate-400'>
                     {payments.length} Payments · ₹{totalRaised} raised
                 </div>
@@ -135,7 +131,7 @@ const PaymentPage = ({ username }) => {
                                 <li key={i} className='my-4 flex gap-2 items-center'>
                                     <img width={33} height={33} src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(p.name)}`} alt="user avatar" />
                                     <span>
-                                        {p.name} donated <span className='font-bold'>₹{p.amount / 100}</span> with a message &quot;{p.message}&quot;
+                                        {p.name} donated <span className='font-bold'>₹{p.amount}</span> with a message &quot;{p.message}&quot;
                                     </span>
                                 </li>
                             ))}
@@ -157,7 +153,6 @@ const PaymentPage = ({ username }) => {
                                 Pay
                             </button>
                         </div>
-                        {/* ✅ Quick-pick amounts — corrected labels to match actual paise values */}
                         <div className='flex flex-col md:flex-row gap-2 mt-5'>
                             <button className='bg-slate-800 p-3 rounded-lg' onClick={() => pay(100 * 100)}>Pay ₹100</button>
                             <button className='bg-slate-800 p-3 rounded-lg' onClick={() => pay(500 * 100)}>Pay ₹500</button>
