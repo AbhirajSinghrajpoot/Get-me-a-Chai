@@ -6,7 +6,7 @@ import connectDb from "@/db/connectDb"
 import User from "@/models/User"
 
 
-export const initiate = async (amount, to_username, paymentform) => {
+export const initiate = async (amount, to_username, paymentform, from_image = "") => {
     await connectDb()
     const normalizedUsername = decodeURIComponent(to_username).toLowerCase()
     const toUser = await User.findOne({ username: normalizedUsername }).lean()
@@ -28,12 +28,13 @@ export const initiate = async (amount, to_username, paymentform) => {
     const safeMessage = paymentform && paymentform.message ? paymentform.message : ""
 
     await Payment.create({
-        oid:     x.id,
-        to_user: normalizedUsername,
-        amount:  Math.round(Number.parseInt(amount) / 100),
-        name:    safeName,
-        message: safeMessage,
-        done:    false
+        oid:        x.id,
+        to_user:    normalizedUsername,
+        amount:     Math.round(Number.parseInt(amount) / 100),
+        name:       safeName,
+        message:    safeMessage,
+        from_image: from_image || "",
+        done:       false
     })
     return x
 }

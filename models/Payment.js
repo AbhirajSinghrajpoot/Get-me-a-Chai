@@ -7,6 +7,7 @@ const PaymentSchema = new Schema({
     oid: { type: String, required: true,},
     message: { type: String },
     amount: { type: Number, required: true },
+    from_image: { type: String, default: "" },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     done: { type: Boolean, default: false }

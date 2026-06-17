@@ -37,24 +37,32 @@ const Dashboard = () => {
         if (!username) return
         const formData = new FormData(e.target)
         let a = await updateProfile(formData, username)
-        toast('Profile Updated!', {
+        toast('✅ Profile Updated!', {
             position: "top-right",
-            autoClose: 5000,
+            autoClose: 4000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "light",
+            theme: "dark",
             transition: Bounce,
         });
     }
+
+    const fields = [
+        { id: "name",          label: "Full Name",        type: "text",  placeholder: "Your display name",          icon: "👤" },
+        { id: "email",         label: "Email",            type: "email", placeholder: "you@example.com",            icon: "✉️" },
+        { id: "username",      label: "Username",         type: "text",  placeholder: "your_username",              icon: "🔖" },
+        { id: "razorpayid",   label: "Razorpay ID",      type: "text",  placeholder: "rzp_live_xxxxxxxxxxxx",      icon: "💳" },
+        { id: "razorpaysecret",label: "Razorpay Secret", type: "text",  placeholder: "Your Razorpay secret key",   icon: "🔑" },
+    ]
 
     return (
         <>
             <ToastContainer
                 position="top-right"
-                autoClose={5000}
+                autoClose={4000}
                 hideProgressBar={false}
                 newestOnTop={false}
                 closeOnClick
@@ -62,46 +70,93 @@ const Dashboard = () => {
                 pauseOnFocusLoss
                 draggable
                 pauseOnHover
-                theme="light"
+                theme="dark"
             />
-            <div className='container mx-auto py-5 px-6 '>
-                <h1 className='text-center my-5 text-3xl font-bold'>Welcome to your Dashboard</h1>
 
-                <form className="max-w-2xl mx-auto" onSubmit={handleSubmit}>
+            {/* Background blobs */}
+            <div className="fixed top-1/4 left-1/4 w-96 h-96 bg-violet-700/10 rounded-full blur-[140px] pointer-events-none -z-10" />
+            <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-cyan-700/10 rounded-full blur-[140px] pointer-events-none -z-10" />
 
-                    <div className='my-2'>
-                        <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                        <input value={form.name || ""} onChange={handleChange} type="text" name='name' id="name" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                    </div>
-                    <div className="my-2">
-                        <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                        <input value={form.email || ""} onChange={handleChange} type="email" name='email' id="email" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                    </div>
-                    <div className='my-2'>
-                        <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
-                        <input value={form.username || ""} onChange={handleChange} type="text" name='username' id="username" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                    </div>
-                    <div className="my-2">
-                        <label htmlFor="profilepic" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Profile Picture</label>
-                        <input value={form.profilepic || ""} onChange={handleChange} type="text" name='profilepic' id="profilepic" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                    </div>
-                    <div className="my-2">
-                        <label htmlFor="coverpic" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Cover Picture</label>
-                        <input value={form.coverpic || ""} onChange={handleChange} type="text" name='coverpic' id="coverpic" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                    </div>
-                    <div className="my-2">
-                        <label htmlFor="razorpayid" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Razorpay Id</label>
-                        <input value={form.razorpayid || ""} onChange={handleChange} type="text" name='razorpayid' id="razorpayid" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                    </div>
-                    <div className="my-2">
-                        <label htmlFor="razorpaysecret" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Razorpay Secret</label>
-                        <input value={form.razorpaysecret || ""} onChange={handleChange} type="text" name='razorpaysecret' id="razorpaysecret" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+            <div className='min-h-screen text-white px-4 py-12'>
+                <div className="max-w-2xl mx-auto">
+
+                    {/* Header */}
+                    <div className="text-center mb-10">
+                        <div className="inline-flex items-center gap-2 bg-slate-800/60 border border-slate-700/50 rounded-full px-4 py-1.5 text-xs text-slate-400 mb-4">
+                            <span className="w-2 h-2 rounded-full bg-violet-400" />
+                            Account Settings
+                        </div>
+                        <h1 className='text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent'>
+                            Welcome to your Dashboard
+                        </h1>
+                        <p className="text-slate-500 text-sm mt-2">Manage your profile and payment settings</p>
                     </div>
 
-                    <div className="my-6">
-                        <button type="submit" className="block w-full p-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:ring-blue-500 focus:ring-4 focus:outline-none dark:focus:ring-blue-800 font-medium text-sm">Save</button>
+                    {/* Form Card */}
+                    <div className="bg-slate-900/70 backdrop-blur-md border border-slate-700/40 rounded-2xl p-6 md:p-8 shadow-2xl">
+                        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+
+                            {/* Profile & Cover group */}
+                            <div className="mb-1">
+                                <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4">Profile Info</p>
+                                <div className="flex flex-col gap-4">
+                                    {fields.slice(0, 3).map(f => (
+                                        <div key={f.id}>
+                                            <label htmlFor={f.id} className="block mb-1.5 text-sm font-medium text-slate-300">
+                                                {f.icon} {f.label}
+                                            </label>
+                                            <input
+                                                id={f.id}
+                                                name={f.id}
+                                                type={f.type}
+                                                value={form[f.id] || ""}
+                                                onChange={handleChange}
+                                                placeholder={f.placeholder}
+                                                className="w-full px-4 py-3 rounded-xl bg-slate-800/80 border border-slate-700/40 text-white placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500/60 focus:bg-slate-800 transition-all"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="h-px bg-slate-700/40" />
+
+                            {/* Payment group */}
+                            <div className="mb-1">
+                                <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4">Payment Settings</p>
+                                <div className="flex flex-col gap-4">
+                                    {fields.slice(3).map(f => (
+                                        <div key={f.id}>
+                                            <label htmlFor={f.id} className="block mb-1.5 text-sm font-medium text-slate-300">
+                                                {f.icon} {f.label}
+                                            </label>
+                                            <input
+                                                id={f.id}
+                                                name={f.id}
+                                                type={f.type}
+                                                value={form[f.id] || ""}
+                                                onChange={handleChange}
+                                                placeholder={f.placeholder}
+                                                className="w-full px-4 py-3 rounded-xl bg-slate-800/80 border border-slate-700/40 text-white placeholder-slate-600 text-sm focus:outline-none focus:border-violet-500/60 focus:bg-slate-800 transition-all font-mono"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Save Button */}
+                            <button
+                                type="submit"
+                                className="w-full py-3 mt-2 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 text-white font-semibold text-sm transition-all duration-200 shadow-lg shadow-violet-900/30 active:scale-[0.98]"
+                            >
+                                Save Changes ✓
+                            </button>
+                        </form>
                     </div>
-                </form>
+
+                    {/* Footer hint */}
+                    <p className="text-center text-slate-600 text-xs mt-6">Changes are saved instantly to your profile</p>
+                </div>
             </div>
         </>
     )

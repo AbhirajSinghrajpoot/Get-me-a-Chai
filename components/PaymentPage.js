@@ -47,7 +47,7 @@ const PaymentPage = ({ username }) => {
                 pauseOnHover: true,
                 draggable: true,
                 progress: undefined,
-                theme: "light",
+                theme: "dark",
                 transition: Bounce,
             });
             getData()
@@ -55,13 +55,12 @@ const PaymentPage = ({ username }) => {
         }
     }, [searchParams, getData, router, username])
 
-
     const handleChange = (e) => {
         setPaymentform({ ...paymentform, [e.target.name]: e.target.value })
     }
 
     const pay = async (amount) => {
-        let a = await initiate(amount, username, paymentform)
+        let a = await initiate(amount, username, paymentform, session?.user?.image || "")
         let orderId = a.id
         var options = {
             "key": currentUser.razorpayid || process.env.NEXT_PUBLIC_KEY_ID,
@@ -78,13 +77,20 @@ const PaymentPage = ({ username }) => {
                 "contact": ""
             },
             "notes": { "username": username },
-            "theme": { "color": "#3399cc" }
+            "theme": { "color": "#7c3aed" }
         }
         var rzp1 = new Razorpay(options);
         rzp1.open();
     }
 
     const totalRaised = payments.reduce((a, b) => a + b.amount, 0)
+
+    const rankEmoji = (i) => {
+        if (i === 0) return "🥇"
+        if (i === 1) return "🥈"
+        if (i === 2) return "🥉"
+        return `#${i + 1}`
+    }
 
     return (
         <>
@@ -98,68 +104,145 @@ const PaymentPage = ({ username }) => {
                 pauseOnFocusLoss
                 draggable
                 pauseOnHover
-                theme="light"
+                theme="dark"
             />
             <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
 
+            {/* Cover + Profile */}
             <div className='cover w-full relative'>
-                {currentUser.coverpic
-                    ? <img className='object-cover w-full h-48 md:h-[350px]' src={currentUser.coverpic} alt="cover" />
-                    : <div className='w-full h-48 md:h-[350px] bg-slate-700' />
-                }
-                <div className='absolute -bottom-20 right-[33%] md:right-[46%] border-white overflow-hidden border-2 rounded-full size-36'>
-                    {currentUser.profilepic
-                        ? <img className='rounded-full object-cover size-36' width={128} height={128} src={currentUser.profilepic} alt="profile" />
-                        : <div className='rounded-full bg-slate-600 size-36' />
-                    }
+                <img
+                    className='object-cover w-full h-52 md:h-[380px]'
+                    src="/cover.png"
+                    alt="cover"
+                />
+                {/* Gradient overlay bottom fade */}
+                <div className='absolute inset-0 bg-gradient-to-t from-[#0a0a1a] via-transparent to-transparent' />
+                {/* Profile picture with glow */}
+                <div className='absolute -bottom-16 left-1/2 -translate-x-1/2'>
+                    <div className='relative'>
+                        <div className='absolute inset-0 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500 blur-md opacity-60 scale-110' />
+                        <img
+                            className='relative rounded-full object-cover size-32 border-4 border-[#0a0a1a]'
+                            width={128}
+                            height={128}
+                            src="/profile.png"
+                            alt="profile"
+                        />
+                    </div>
                 </div>
             </div>
 
-            <div className="info flex justify-center items-center my-24 mb-11 flex-col gap-2">
-                <div className='font-bold text-lg'>@{username}</div>
-                <div className='text-slate-400'>Lets help {username} get a chai!</div>
-                <div className='text-slate-400'>
-                    {payments.length} Payments · ₹{totalRaised} raised
-                </div>
+            {/* Info Section */}
+            <div className="flex justify-center items-center mt-24 mb-6 flex-col gap-2">
+                <h1 className='font-extrabold text-2xl bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent tracking-wide'>
+                    Wizard
+                </h1>
+                <p className='text-slate-400 text-sm'>Lets help Wizard get a chai!</p>
 
-                <div className="payment flex gap-3 w-[80%] mt-11 flex-col md:flex-row">
-                    <div className="supporters w-full md:w-1/2 bg-slate-900 rounded-lg text-white px-2 md:p-10">
-                        <h2 className='text-2xl font-bold my-5'>Top 10 Supporters</h2>
-                        <ul className='mx-5 text-lg'>
-                            {payments.length === 0 && <li>No payments yet. Be the first!</li>}
-                            {payments.map((p, i) => (
-                                <li key={i} className='my-4 flex gap-2 items-center'>
-                                    <img width={33} height={33} src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(p.name)}`} alt="user avatar" />
-                                    <span>
-                                        {p.name} donated <span className='font-bold'>₹{p.amount}</span> with a message &quot;{p.message}&quot;
+                {/* Stats */}
+                <div className='flex gap-4 mt-3'>
+                    <div className='flex flex-col items-center bg-slate-800/60 backdrop-blur rounded-2xl px-6 py-3 border border-slate-700/40'>
+                        <span className='text-white font-bold text-xl'>{payments.length}</span>
+                        <span className='text-slate-400 text-xs mt-0.5'>Payments</span>
+                    </div>
+                    <div className='flex flex-col items-center bg-slate-800/60 backdrop-blur rounded-2xl px-6 py-3 border border-slate-700/40'>
+                        <span className='text-white font-bold text-xl'>₹{totalRaised.toLocaleString()}</span>
+                        <span className='text-slate-400 text-xs mt-0.5'>Raised</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Cards */}
+            <div className="flex gap-5 w-[92%] max-w-5xl mx-auto my-8 flex-col md:flex-row pb-10">
+
+                {/* Top Supporters */}
+                <div className="w-full md:w-1/2 bg-slate-900/70 backdrop-blur-md border border-slate-700/40 rounded-2xl p-6 shadow-2xl">
+                    <h2 className='text-lg font-bold mb-5 flex items-center gap-2 text-white'>
+                        <span>🏆</span> Top 10 Supporters
+                    </h2>
+                    <ul className='flex flex-col gap-3'>
+                        {payments.length === 0 &&
+                            <li className='text-slate-500 text-sm text-center py-8'>
+                                No payments yet. Be the first! ☕
+                            </li>
+                        }
+                        {payments.map((p, i) => (
+                            <li key={i} className='flex gap-3 items-center bg-slate-800/50 rounded-xl px-3 py-2.5 border border-slate-700/30 hover:border-violet-500/40 hover:bg-slate-800/80 transition-all duration-200'>
+                                <span className='text-base w-7 text-center shrink-0 font-bold'>{rankEmoji(i)}</span>
+                                <img
+                                    width={38} height={38}
+                                    src={p.from_image || `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(p.name)}`}
+                                    alt="avatar"
+                                    className="rounded-full object-cover shrink-0 border-2 border-slate-600"
+                                    onError={(e) => { e.target.src = `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(p.name)}` }}
+                                />
+                                <div className='flex flex-col min-w-0'>
+                                    <span className='text-white text-sm font-semibold truncate'>{p.name}</span>
+                                    <span className='text-slate-400 text-xs truncate'>
+                                        donated <span className='text-violet-400 font-bold'>₹{p.amount}</span>
+                                        {p.message ? ` · "${p.message}"` : ""}
                                     </span>
-                                </li>
-                            ))}
-                        </ul>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                {/* Make a Payment */}
+                <div className="w-full md:w-1/2 bg-slate-900/70 backdrop-blur-md border border-slate-700/40 rounded-2xl p-6 shadow-2xl">
+                    <h2 className='text-lg font-bold mb-5 flex items-center gap-2 text-white'>
+                        <span>☕</span> Make a Payment
+                    </h2>
+                    <div className='flex gap-3 flex-col'>
+                        <input
+                            onChange={handleChange}
+                            value={paymentform.name}
+                            name='name'
+                            type="text"
+                            className='w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700/40 text-white placeholder-slate-500 focus:outline-none focus:border-violet-500/70 focus:bg-slate-800 transition-all text-sm'
+                            placeholder='Your Name'
+                        />
+                        <input
+                            onChange={handleChange}
+                            value={paymentform.message}
+                            name='message'
+                            type="text"
+                            className='w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700/40 text-white placeholder-slate-500 focus:outline-none focus:border-violet-500/70 focus:bg-slate-800 transition-all text-sm'
+                            placeholder='Leave a message...'
+                        />
+                        <input
+                            onChange={handleChange}
+                            value={paymentform.amount}
+                            name="amount"
+                            type="number"
+                            min="1"
+                            className='w-full p-3 rounded-xl bg-slate-800/80 border border-slate-700/40 text-white placeholder-slate-500 focus:outline-none focus:border-violet-500/70 focus:bg-slate-800 transition-all text-sm'
+                            placeholder='Amount (₹)'
+                        />
+                        <button
+                            onClick={() => pay(Number.parseInt(paymentform.amount) * 100)}
+                            type="button"
+                            className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 text-white font-semibold text-sm transition-all duration-200 shadow-lg shadow-violet-900/30 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
+                            disabled={paymentform.name?.length < 3 || paymentform.message?.length < 4 || paymentform.amount?.length < 1}
+                        >
+                            Pay Now 🚀
+                        </button>
                     </div>
 
-                    <div className="makePayment w-full md:w-1/2 bg-slate-900 rounded-lg text-white px-2 md:p-10">
-                        <h2 className='text-2xl font-bold my-5'>Make a Payment</h2>
-                        <div className='flex gap-2 flex-col'>
-                            <input onChange={handleChange} value={paymentform.name} name='name' type="text" className='w-full p-3 rounded-lg bg-slate-800' placeholder='Enter Name' />
-                            <input onChange={handleChange} value={paymentform.message} name='message' type="text" className='w-full p-3 rounded-lg bg-slate-800' placeholder='Enter Message' />
-                            <input onChange={handleChange} value={paymentform.amount} name="amount" type="number" min="1" className='w-full p-3 rounded-lg bg-slate-800' placeholder='Enter Amount (₹)' />
+                    {/* Quick amounts */}
+                    <div className='grid grid-cols-3 gap-2 mt-4'>
+                        {[100, 500, 1000].map((amt) => (
                             <button
-                                onClick={() => pay(Number.parseInt(paymentform.amount) * 100)}
-                                type="button"
-                                className="text-white bg-gradient-to-br from-purple-900 to-blue-900 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled={paymentform.name?.length < 3 || paymentform.message?.length < 4 || paymentform.amount?.length < 1}
+                                key={amt}
+                                onClick={() => pay(amt * 100)}
+                                className='py-2.5 px-3 rounded-xl bg-slate-800/80 border border-slate-700/40 text-slate-300 text-sm font-medium hover:border-violet-500/50 hover:text-white hover:bg-slate-700/80 transition-all duration-200 active:scale-95'
                             >
-                                Pay
+                                ₹{amt}
                             </button>
-                        </div>
-                        <div className='flex flex-col md:flex-row gap-2 mt-5'>
-                            <button className='bg-slate-800 p-3 rounded-lg' onClick={() => pay(100 * 100)}>Pay ₹100</button>
-                            <button className='bg-slate-800 p-3 rounded-lg' onClick={() => pay(500 * 100)}>Pay ₹500</button>
-                            <button className='bg-slate-800 p-3 rounded-lg' onClick={() => pay(1000 * 100)}>Pay ₹1000</button>
-                        </div>
+                        ))}
                     </div>
                 </div>
+
             </div>
         </>
     )
