@@ -14,7 +14,8 @@ const LoginContent = () => {
     console.log(session)
     if (session) {
       // If a callbackUrl was provided (e.g., from payment page), go there; otherwise go to user's page
-      router.push(callbackUrl ? callbackUrl : `/${session.user.name}`)
+      const targetUrl = callbackUrl ? callbackUrl : `/${session.user.username || (session.user.email || "").split("@")[0] || ""}`
+      router.push(targetUrl)
     }
   }, [session, router, callbackUrl])
 
